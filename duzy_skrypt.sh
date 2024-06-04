@@ -2,7 +2,7 @@
 # Autor: Jan Bancerewicz, 198099 
 
 # Opis skryptu:
-# gra w kołko i krzyzyk dla 2 graczy
+# Gra w kołko i krzyzyk dla 2 graczy
 # Gra odbywa się w oknie terminalu
 # Plansza do gry jest reprezentowana za pomocą siatki 3x3
 
@@ -63,8 +63,8 @@ function initialize_field()
 function print_game()
 {
    echo "=== Leaderboard ==="
-   echo "Gracz 1: O $Score1" #assigning symbols to players
-   echo "Gracz 2: X $Score2"
+   echo "Gracz 1(O): $Score1" #assigning symbols to players
+   echo "Gracz 2(X): $Score2"
    echo
    echo "    1   2   3" #numbering columns
    echo "  +---+---+---+" #top frame
@@ -150,8 +150,8 @@ function making_move()
     while [[ "$GameEnd" -eq "0" ]]; do #creating a loop that will go as long as game is not ended
     # while true; do #creating a loop that will go as long as game is not ended
     while true; do #infinite internal loop to make sure it will iterate in every turn
-        echo -n "Gracz $((CurrentPlayer + 1)). Podaj koordynaty (wiersz kolumna): " #reading position from the keyboard
-        read position_x position_y 
+        echo -n "Gracz $((CurrentPlayer + 1)). Podaj koordynaty (pozycja x, pozycja y): " #reading position from the keyboard
+        read position_y position_x 
         position_x=$((position_x-1))
         position_y=$((position_y-1))
 
@@ -171,6 +171,15 @@ function making_move()
     CurrentPlayer=$((1 - CurrentPlayer)) #changing the current player so the next person can make move
 done
 }
+
+# function reset_board(
+# {
+#     CurrentPlayer=0 
+#     Winner=0
+#     GameEnd=0
+#     initialize_field
+#     echo "Reset planszy."
+# }
 
 #function game to print menu at first then initialize field then print board for the first time and then playing the game till the end
 function game()
