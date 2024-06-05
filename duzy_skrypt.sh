@@ -59,6 +59,18 @@ function initialize_field()
     done
 }
 
+function reset_board()
+{
+    CurrentPlayer=0 
+    Winner=0
+    GameEnd=0
+    CurrentPlayer=$((1 - CurrentPlayer))
+    echo "Koniec gry! Gracz $((1 + CurrentPlayer)) zaczyna nastepna rozgrywke!" #printing information about winner and ending the game
+    echo "Reset planszy."
+    initialize_field
+}
+
+
 #function which additional info about the game and the field
 function print_game()
 {
@@ -172,15 +184,6 @@ function making_move()
 done
 }
 
-# function reset_board(
-# {
-#     CurrentPlayer=0 
-#     Winner=0
-#     GameEnd=0
-#     initialize_field
-#     echo "Reset planszy."
-# }
-
 #function game to print menu at first then initialize field then print board for the first time and then playing the game till the end
 function game()
 {
@@ -189,6 +192,8 @@ function game()
     initialize_field
     print_game
     making_move
+    reset_board
+    game
 }
 
 #calling function game
@@ -196,9 +201,3 @@ function game()
 game
 
 # todo fix
-
-
-
-
-
-
