@@ -93,7 +93,7 @@ function reset_board()
 
 
 #funkcja sprawdzajaca czy ktorys z graczy posiada linie zlozona z 3 takich samych symboli, w przypadku detekcji wygranej, wygrywa obecny gracz
-function check_winner()
+function check_victory()
 {
    for((i=0; i<NumberOfRows; i++)); do #sprawdza dla kazdego wiersza czy istnieje polaczenie 3 wierszy
         if [[ ${FIELD[$i,0]} != 0 && ${FIELD[$i,0]} == ${FIELD[$i,1]} && ${FIELD[$i,0]} == ${FIELD[$i,2]} ]]; then
@@ -128,7 +128,7 @@ function check_winner()
 
 
 #funkcja rysujaca plansze oraz rozmieszczenie pionkow
-function print_game()
+function print_board()
 {
    echo "=== Leaderboard ==="
    echo "Gracz 1(O): $Score1" #gracz 1 ma kolko
@@ -180,7 +180,7 @@ function check_draw()
    fi
 }
 
-function making_move()
+function read_player_input()
 {
     while [[ "$GameEnd" -eq "0" ]]; do #glowna petla gry
     while true; do #nieskonczona petla oczekujaca na input gracza
@@ -199,8 +199,8 @@ function making_move()
         fi
     done
 
-    print_game    
-    check_winner
+    print_board    
+    check_victory
     check_draw
     CurrentPlayer=$((1 - CurrentPlayer)) #oddanie ruchu nastepnemu graczowi
 done
@@ -212,8 +212,8 @@ function game()
     print_header
     print_rules
     initialize_field
-    print_game
-    making_move
+    print_board
+    read_player_input
     reset_board
     game
 }
