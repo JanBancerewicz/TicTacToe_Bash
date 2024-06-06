@@ -9,26 +9,46 @@
 
 #leaderboard
 
-function print_info()
+function print_rules()
 {
     echo "Autor: Jan Bancerewicz, 198099"
     echo "Gra w kolko i krzyzyk"
     echo "Aby zagrac, podaj numer wiersza i kolumny"
-    echo "Standardowe zasady gry: wygrywa gracz ktory pierwszy stworzy linie z 3 znakow, remis w przypadku braku mozliwych ruchow"
+    echo "Standardowe zasady gry: wygrywa gracz ktory pierwszy stworzy linie z 3 znakow, remis w przypadku braku mozliwych ruchow, gra na planszy 3x3"
     echo ""
 }
 
+# funkcja wypisujaca zaawansowane zasady rozgrywki, dostepna za pomoca przelacznika -h 
+function print_adv_rules()
+{
+    echo "# Wprowadzenie"
+    echo "Kolko i Krzyzyk, znane rowniez jako Tic-Tac-Toe, to prosta, dwuosobowa gra strategiczna. Gracze na zmiane umieszczaja swoje symbole (kołko lub krzyzyk) na planszy o wymiarach 3x3. Celem gry jest ułozenie trzech swoich symboli w linii - poziomej, pionowej lub ukosnej."
+    echo ""
+    echo "# Przygotowanie do Gry"
+    echo "Plansza: Gra odbywa się na planszy składającej się z 9 pól, ułożonych w kwadrat 3x3; Symbole: Jeden z graczy używa kółek (O), a drugi krzyżyków (X)."
+    echo ""
+    echo "# Zasady Gry"
+    echo "Ruchy Graczy: Gracze na zmianę umieszczają swoje symbole na wolnych polach planszy; Gra rozpoczyna się od ruchu gracza, który wybrał Kolko (O);"
+    echo "Cel Gry: Celem gry jest ułożenie trzech swoich symboli w jednej linii - poziomej, pionowej lub ukośnej;"
+    echo "Koniec Gry: Gra kończy się w momencie, gdy jeden z graczy ułoży trzy swoje symbole w linii, ogłaszając tym samym swoje zwycięstwo; Gra może również zakończyć się remisem, jeśli wszystkie pola zostaną zapełnione, a żaden z graczy nie osiągnie celu."
+}
 
+# funkcja wypisujaca wersje skryptu oraz autora, dostepna za pomoca przelacznika -v
+function print_version_and_author_info()
+{
+    echo "Autor: Jan Bancerewicz, 198099"
+    echo "Wersja programu: 1.0"
+    echo "Kolko i krzyzyk - realizacja w bashu"
+}
 
-# #checking if some option was passed while executing program
-# while getopts hvq OPT; do
-# case $OPT in
-# h) print_info;;
-# # v) version;;
-# q) exit;;
-# *) echo ”Wybierz inna opcje”;;
-# esac
-# done
+#petla sprawdzajaca czy zostal aktywowany jakikolwiek przelacznik przy uruchomieniu programu
+while getopts hv OPT; do
+case $OPT in
+h) print_adv_rules;;
+v) print_version_and_author_info;;
+*) echo ”Wybierz inna opcje”;;
+esac
+done
 
 #deklaracja zmiennych
 declare -A FIELD
@@ -41,96 +61,63 @@ GameEnd=0
 Score1=0
 Score2=0
 
-#function to print menu
-function print_menu()
+#funkcja wypisujaca naglowek zawierajacy nazwe skryptu
+function print_header()
 {
    echo "=========================="
    echo "     Kolko i krzyzyk      "
    echo "=========================="
 }
 
-#inicjalizacja wszystkich pol tablicy wartoscia 3
+#inicjalizacja wszystkich pol tablicy wartoscia 0
 function initialize_field()
 {
     for ((i=0; i<NumberOfRows; i++ )); do
        for (( j=0; j<NumberOfColumns; j++ )); do
-          FIELD[$i,$j]=0 #3 - puste zmien na 0
+          FIELD[$i,$j]=0 # 0 = puste pole
        done
     done
 }
 
+#funkcja resetujaca plansze do stanu z poczatku gry
 function reset_board()
 {
     CurrentPlayer=0 
     Winner=0
     GameEnd=0
     CurrentPlayer=$((1 - CurrentPlayer))
-    echo "Koniec gry! Gracz $((1 + CurrentPlayer)) zaczyna nastepna rozgrywke!" #printing information about winner and ending the game
+    echo "Koniec gry! Gracz $((1 + CurrentPlayer)) zaczyna nastepna rozgrywke!"
     echo "Reset planszy."
     initialize_field
 }
 
 
-#function which additional info about the game and the field
-function print_game()
-{
-   echo "=== Leaderboard ==="
-   echo "Gracz 1(O): $Score1" #assigning symbols to players
-   echo "Gracz 2(X): $Score2"
-   echo
-   echo "    1   2   3" #numbering columns
-   echo "  +---+---+---+" #top frame
-
-   for ((i=0; i<NumberOfRows; i++ )); do
-        printf "%d |" "$((i+1))" #%d is specifier for integers and this will print numbering of a rows
-        for (( j=0; j<NumberOfColumns; j++ )); do #loop iterates through every row and column of an array
-            if [[ "${FIELD[$i,$j]}" = "2" ]]; then 
-                printf " X " #printing X when field is taken by player 2
-            elif [[ "${FIELD[$i,$j]}" = "1" ]]; then
-                printf " O " #printing O when field is taken by player 1
-            elif [[ "${FIELD[$i,$j]}" = "0" ]]; then
-                printf "   " #printing spaces when field is empty (not taken)
-            fi
-
-            if [[ "$j" -lt "$((NumberOfColumns))" ]]; then
-                printf "|" #printing pipelines between columns to create frame
-            fi
-        done
-
-        echo
-        if [[ "$i" -lt "$((NumberOfRows))" ]]; then
-            echo "  +---+---+---+"           #printing this type of frame for each row
-        fi
-    done    
-    echo
-}
-
+#funkcja sprawdzajaca czy ktorys z graczy posiada linie zlozona z 3 takich samych symboli, w przypadku detekcji wygranej, wygrywa obecny gracz
 function check_winner()
 {
-   
-   for((i=0; i<NumberOfRows; i++)); do #checking if first position in each row is taken by any of the players and then checking if the same symbols are in all fields in that row
+   for((i=0; i<NumberOfRows; i++)); do #sprawdza dla kazdego wiersza czy istnieje polaczenie 3 wierszy
         if [[ ${FIELD[$i,0]} != 0 && ${FIELD[$i,0]} == ${FIELD[$i,1]} && ${FIELD[$i,0]} == ${FIELD[$i,2]} ]]; then
-            Winner=1 #flag to easily check winner
+            Winner=1 #zmienna globalna zawierajaca informacje o stanie wygranej
         fi
    done
 
-   for((j=0; j<NumberOfColumns; j++)); do #checking if first position in each column is taken by any of the players and then checking if the same symbols are in all fields in that column
+   for((j=0; j<NumberOfColumns; j++)); do #sprawdza dla kazdej kolumny czy istnieje polaczenie 3 kolumn
         if [[ ${FIELD[0,$j]} != 0 && ${FIELD[0,$j]} == ${FIELD[1,$j]} && ${FIELD[0,$j]} == ${FIELD[2,$j]} ]]; then
             Winner=1
         fi
    done
 
-   if [[ ${FIELD[0,0]} != 0 && ${FIELD[0,0]} == ${FIELD[1,1]} && ${FIELD[0,0]} == ${FIELD[2,2]} ]]; then #checking first diagonal
+   if [[ ${FIELD[0,0]} != 0 && ${FIELD[0,0]} == ${FIELD[1,1]} && ${FIELD[0,0]} == ${FIELD[2,2]} ]]; then #sprawdzanie przekatnej 1
         Winner=1
    fi
 
-   if [[ ${FIELD[0,2]} != 0 && ${FIELD[0,2]} == ${FIELD[1,1]} && ${FIELD[0,2]} == ${FIELD[2,0]} ]]; then #checking second diagonal
+   if [[ ${FIELD[0,2]} != 0 && ${FIELD[0,2]} == ${FIELD[1,1]} && ${FIELD[0,2]} == ${FIELD[2,0]} ]]; then #sprawdzanie przekatnej 2
         Winner=1
    fi
 
    if [[ "$Winner" == "1" ]]; then
-        echo "Koniec gry! Gracz $((1 + CurrentPlayer)) wygrywa!" #printing information about winner and ending the game
-        GameEnd=1
+        echo "Koniec gry! Gracz $((1 + CurrentPlayer)) wygrywa!"
+        GameEnd=1 # zmienna globalna informujaca o koncu gry
         if [[ "$CurrentPlayer" == "0" ]]; then
             Score1=$((Score1+1))
         else
@@ -139,10 +126,46 @@ function check_winner()
    fi
 }
 
+
+#funkcja rysujaca plansze oraz rozmieszczenie pionkow
+function print_game()
+{
+   echo "=== Leaderboard ==="
+   echo "Gracz 1(O): $Score1" #gracz 1 ma kolko
+   echo "Gracz 2(X): $Score2" #gracz 2 ma krzyzyk
+   echo
+   echo "    1   2   3" #inkdeksowanie kolumn
+   echo "  +---+---+---+"
+
+   for ((i=0; i<NumberOfRows; i++ )); do #iteracja po wierszach w tabeli
+        printf "%d |" "$((i+1))" #%d wyswietli indeks petli jako numer wiersza
+        for (( j=0; j<NumberOfColumns; j++ )); do #iteracja po kolumnach w wierszu
+            if [[ "${FIELD[$i,$j]}" = "2" ]]; then 
+                printf " X " #wyswietlanie X dla pol zajetych przez gracza 2
+            elif [[ "${FIELD[$i,$j]}" = "1" ]]; then
+                printf " O " #wyswietlanie O dla pol zajetych przez gracza 1
+            elif [[ "${FIELD[$i,$j]}" = "0" ]]; then
+                printf "   " #wyswietlanie pustego pola dla pol niezajetych przez zadnego z graczy
+            fi
+
+            if [[ "$j" -lt "$((NumberOfColumns))" ]]; then
+                printf "|" #oddzielanie pol symbolem pionowej kreski "|"
+            fi
+        done
+
+        echo
+        if [[ "$i" -lt "$((NumberOfRows))" ]]; then
+            echo "  +---+---+---+" #dolny koniec planszy
+        fi
+    done    
+    echo
+}
+
+#funkcja sprawdzajaca czy mozliwa jest dalsza rozgrywka, czy nie ma remisu
 function check_draw()
 {
    Draw=1
-   #the game can only be a draw when all fields are taken and there is no winner 
+   #jesli wszystkie pola sa zajete to remis
    for ((i=0; i<NumberOfRows; i++ )); do
       for (( j=0; j<NumberOfColumns; j++ )); do
          if [[ ${FIELD[$i,$j]} == 0 ]]; then
@@ -151,44 +174,43 @@ function check_draw()
       done
    done
 
-   if [[ "$Draw" -eq "1" ]] && [[ "$GameEnd" -eq "0" ]]; then #GameEnd equal 0 is here to make sure that the game wont end in a draw where there is a winner in the last move
-       echo "Remis! Brak mozliwych ruchow" #printing information about draw and ending game
+   if [[ "$Draw" -eq "1" ]] && [[ "$GameEnd" -eq "0" ]]; then 
+       echo "Remis! Brak mozliwych ruchow" #jezeli gra sie jeszcze nie skonczyla, a wszystkie pola sa zajete to wyswietl remis i zakoncz gre
        GameEnd=1
    fi
 }
 
 function making_move()
 {
-    while [[ "$GameEnd" -eq "0" ]]; do #creating a loop that will go as long as game is not ended
-    # while true; do #creating a loop that will go as long as game is not ended
-    while true; do #infinite internal loop to make sure it will iterate in every turn
-        echo -n "Gracz $((CurrentPlayer + 1)). Podaj koordynaty (pozycja x, pozycja y): " #reading position from the keyboard
-        read position_y position_x 
+    while [[ "$GameEnd" -eq "0" ]]; do #glowna petla gry
+    while true; do #nieskonczona petla oczekujaca na input gracza
+        echo -n "Gracz $((CurrentPlayer + 1)). Podaj koordynaty (pozycja x, pozycja y): "
+        read position_y position_x # pobieranie wartosci od 1-3, 1-3
         position_x=$((position_x-1))
         position_y=$((position_y-1))
 
-        if [[ "${FIELD[$position_x,$position_y]}" == 0 ]]; then #changing empty field to players field 
-            FIELD[$position_x,$position_y]=$((CurrentPlayer+1))
+        if [[ "${FIELD[$position_x,$position_y]}" == 0 ]]; then
+            FIELD[$position_x,$position_y]=$((CurrentPlayer+1)) #przypisywanie gracza do pola planszy
             break
-        elif [[ "$position_x" -gt 3 ]] || [[ "$position_x" -lt 1 ]] || [[ "$position_y" -gt 3 ]] || [[ "$position_y" -lt 1 ]]; then #checking if entered position is valid
+        elif [[ "$position_x" -gt 3 ]] || [[ "$position_x" -lt 1 ]] || [[ "$position_y" -gt 3 ]] || [[ "$position_y" -lt 1 ]]; then #walidacja pozycji
                 echo "Niepoprawne koordynaty! Podaj poprawna pozycje."
         else
-            echo "Pozycja zajeta! Podaj poprawna pozycje." #in other case it means that position is not empty so it is taken by one of the players
+            echo "Pozycja zajeta! Podaj poprawna pozycje." #ciag dalszy walidacji, jesli podamy duplikat pola zajetego
         fi
     done
 
-    print_game    #printing field and checking if the game ended after each position change 
+    print_game    
     check_winner
     check_draw
-    CurrentPlayer=$((1 - CurrentPlayer)) #changing the current player so the next person can make move
+    CurrentPlayer=$((1 - CurrentPlayer)) #oddanie ruchu nastepnemu graczowi
 done
 }
 
-#function game to print menu at first then initialize field then print board for the first time and then playing the game till the end
+#funkcja rekurencyjna odpowiadajaca za przebieg gry
 function game()
 {
-    print_menu
-    print_info
+    print_header
+    print_rules
     initialize_field
     print_game
     making_move
@@ -196,8 +218,4 @@ function game()
     game
 }
 
-#calling function game
-
 game
-
-# todo fix
