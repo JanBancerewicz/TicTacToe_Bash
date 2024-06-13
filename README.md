@@ -14,6 +14,7 @@ Gra w kółko i krzyżyk w bashu
 - Skrypt gry został napisany w języku Bash.
 - Gra wykorzystuje pętle, warunki i funkcje wbudowane w Bash do zarządzania logiką gry.
 - Plansza jest reprezentowana za pomocą tablicy dwuwymiarowej 3x3.
+- Program zawiera manual opisujący dokładne zasady gry
 
 #### Instrukcja gry
 - Po uruchomieniu skryptu gracze widzą planszę do gry oraz informacje o tym, kto ma wykonać ruch.
