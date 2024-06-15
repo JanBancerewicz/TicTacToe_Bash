@@ -1,5 +1,5 @@
 # TicTacToe_Bash
-## Opis
+
 Gra w kółko i krzyżyk w bashu
 
 ### Zasady gry
