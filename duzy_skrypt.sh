@@ -1,5 +1,5 @@
 #!/bin/bash
-# Autor: Jan Bancerewicz, 198099 
+# Autor: Jan Bancerewicz 
 
 # Opis skryptu:
 # Gra w kołko i krzyzyk dla 2 graczy
@@ -11,7 +11,7 @@
 
 function print_rules()
 {
-    echo "Autor: Jan Bancerewicz, 198099"
+    echo "Autor: Jan Bancerewicz"
     echo "Gra w kolko i krzyzyk"
     echo "Aby zagrac, podaj numer wiersza i kolumny"
     echo "Standardowe zasady gry: wygrywa gracz ktory pierwszy stworzy linie z 3 znakow, remis w przypadku braku mozliwych ruchow, gra na planszy 3x3"
@@ -36,7 +36,7 @@ function print_adv_rules()
 # funkcja wypisujaca wersje skryptu oraz autora, dostepna za pomoca przelacznika -v
 function print_version_and_author_info()
 {
-    echo "Autor: Jan Bancerewicz, 198099"
+    echo "Autor: Jan Bancerewicz"
     echo "Wersja programu: 1.0"
     echo "Kolko i krzyzyk - realizacja w bashu"
 }

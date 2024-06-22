@@ -1,7 +1,3 @@
-## Opis
-Jan Bancerewicz, 198099
-Duży skrypt - gra w kółko i krzyżyk w bashu
-
 ### Zasady gry
 - Gra odbywa się w oknie terminalu
 - Plansza do gry jest reprezentowana za pomocą siatki 3x3.
